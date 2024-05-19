@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Config;
+using TMPro;
 using UnityEngine;
 
 namespace Assets.Scripts.Field
@@ -14,23 +15,27 @@ namespace Assets.Scripts.Field
         [SerializeField]
         private Color _nonPassableColor;
 
-        private Color DefaultColor => _cell.IsPassable ? _passableColor : _nonPassableColor;
+        [SerializeField]
+        private Color _drawPathColor;
+
+        [SerializeField]
+        private TextMeshPro _pathText;
+
+        private Color DefaultColor => _cell.IsTraversable ? _passableColor : _nonPassableColor;
 
         private Cell _cell;
-        private GameState _gameState;
 
         private bool _isSelected = false;
 
-        public int Row => _cell.Row;
+        public Cell Data => _cell;
 
-        public int Column => _cell.Column;
-
-        public void Initialize(Cell cell, GameState gameState, Vector3 rootPosition)
+        public void Initialize(Cell cell, Vector3 rootPosition)
         {
             _cell = cell;
-            _gameState = gameState;
+
             SetPosition(rootPosition);
             UpdateView();
+            ClearPathText();
         }
 
         public override string ToString()
@@ -48,25 +53,14 @@ namespace Assets.Scripts.Field
             SetSelected(true);
         }
 
-        public void Click()
+        public void DrawPath()
         {
-            switch (_gameState.CellClickMode)
-            {
-                case CellClickMode.TurnIntoObstacle:
-                    ChangeCellPassable(false);
-                    break;
-                case CellClickMode.TurnIntoPassable:
-                    ChangeCellPassable(true);
-                    break;
-                default:
-                    Debug.LogWarning("Unsupported CellClickMode");
-                    break;
-            }
+            _renderer.material.color = _drawPathColor;
         }
 
-        private void ChangeCellPassable(bool isPassable)
+        public void SetTraversable(bool isTraversable)
         {
-            _cell.SetPassable(isPassable);
+            _cell.SetTraversable(isTraversable);
             UpdateView();
         }
 
@@ -75,6 +69,21 @@ namespace Assets.Scripts.Field
             var outlineThikness = _isSelected ? 0.1f : 0f;
             _renderer.material.SetFloat("_Outline", outlineThikness);
             _renderer.material.color = DefaultColor;
+        }
+
+        public void SetPathStartPoint()
+        {
+            _pathText.SetText("START");
+        }
+
+        public void SetPathEndPoint()
+        {
+            _pathText.SetText("END");
+        }
+
+        public void ClearPathText()
+        {
+            _pathText.SetText(string.Empty);
         }
 
         private void SetSelected(bool isSelected)
@@ -89,9 +98,9 @@ namespace Assets.Scripts.Field
         private void SetPosition(Vector3 rootPosition)
         {
             transform.position = new Vector3(
-                 rootPosition.x + (Row * Constants.SPACE_BETWEEN_CELLS),
+                 rootPosition.x + (_cell.Row * Constants.SPACE_BETWEEN_CELLS),
                  0,
-                 rootPosition.z + (Column * Constants.SPACE_BETWEEN_CELLS));
+                 rootPosition.z + (_cell.Column * Constants.SPACE_BETWEEN_CELLS));
         }
     }
 }

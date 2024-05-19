@@ -1,12 +1,20 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Assets.Scripts
 {
-    public class SelectableController : MonoBehaviour
+    public class SelectableController : MonoBehaviour, ISelectableController
     {
-        private ISelectable _previousSelectable;
+        private ISelectable _previousClicked;
+        private ISelectable _currentClicked;
         private ISelectable _currentSelectable;
+
+        public ISelectable PreviousClicked => _previousClicked;
+
+        public ISelectable CurrentClicked => _currentClicked;
+
+        public event Action<ISelectable> OnClicked;
 
         private void Update()
         {
@@ -30,7 +38,6 @@ namespace Assets.Scripts
                     if (_currentSelectable != selectable)
                     {
                         _currentSelectable?.Deselect();
-                        _previousSelectable = _currentSelectable;
                         _currentSelectable = selectable;
                         _currentSelectable.Select();
                     }
@@ -48,7 +55,17 @@ namespace Assets.Scripts
 
         private void HandleMouseClick()
         {
-            _currentSelectable?.Click();
+            _previousClicked = _currentClicked;
+
+            if (_currentSelectable != null)
+            {
+                _currentClicked = _currentSelectable;
+                OnClicked?.Invoke(_currentClicked);
+            }
+            else
+            {
+                _currentClicked = null;
+            }
         }
 
         private void DeselectCurrent()
@@ -56,7 +73,6 @@ namespace Assets.Scripts
             if (_currentSelectable != null)
             {
                 _currentSelectable.Deselect();
-                _previousSelectable = _currentSelectable;
                 _currentSelectable = null;
             }
         }

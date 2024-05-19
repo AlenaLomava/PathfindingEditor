@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Field;
+using Assets.Scripts.States;
 using Assets.Scripts.UI;
 using UnityEngine;
 
@@ -19,9 +20,9 @@ namespace Assets.Scripts
 
         void Start()
         {
-            var gameState = new GameState();
-            _gridController = new GridController(_gameGridView, gameState);
-            _uiController.Initialize(_gridController, gameState);
+            var statesController = new FieldEditorStatesController(_selectableController, _gameGridView);
+            _gridController = new GridController(_gameGridView);
+            _uiController.Initialize(_gridController, statesController);
         }
     }
 }

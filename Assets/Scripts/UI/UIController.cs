@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Field;
+using Assets.Scripts.States;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,24 +26,32 @@ namespace Assets.Scripts.UI
         [SerializeField]
         private ToggleButton _setPassableButton;
 
+        [SerializeField]
+        private Button _pathfindingButton;
+
         private ToggleButtonPresenter _toggleButtonPresenter;
         private GenerateFieldButtonPresenter _generateFieldButtonPresenter;
+        private PathfindingButtonPresenter _pathfindingButtonPresenter;
 
         public void OnDisable()
         {
             _toggleButtonPresenter?.Dispose();
             _generateFieldButtonPresenter?.Dispose();
+            _pathfindingButtonPresenter?.Dispose();
         }
 
-        public void Initialize(GridController gridController, GameState gameState)
+        public void Initialize(GridController gridController, IFieldEditorStatesController statesController)
         {
-            _toggleButtonPresenter = new ToggleButtonPresenter(_setObstacleButton, _setPassableButton, gameState);
+            _toggleButtonPresenter = new ToggleButtonPresenter(_setObstacleButton, _setPassableButton, statesController);
+
             _generateFieldButtonPresenter = new GenerateFieldButtonPresenter(
                 _rowsInput, 
                 _columnsInput, 
                 _obstaclesInput,
                 _generateFieldButton,
                 gridController);
+
+            _pathfindingButtonPresenter = new PathfindingButtonPresenter(_pathfindingButton, statesController);
         }
     }
 }

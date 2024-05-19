@@ -6,23 +6,23 @@
 
         public int Column { get; }
 
-        public bool IsPassable { get; private set; }
+        public bool IsTraversable { get; private set; }
 
-        public Cell(int row, int column, bool isPassable)
+        public Cell(int row, int column, bool isTraversable)
         {
             Row = row;
             Column = column;
-            IsPassable = isPassable;
+            IsTraversable = isTraversable;
         }
 
-        public void SetPassable(bool isPassable)
+        public void SetTraversable(bool isTraversable)
         {
-            IsPassable = isPassable;
+            IsTraversable = isTraversable;
         }
 
         public override string ToString()
         {
-            return $"Row: {Row}, Column: {Column}, IsPassable: {IsPassable}.";
+            return $"Row: {Row}, Column: {Column}, IsTraversable: {IsTraversable}.";
         }
     }
 }

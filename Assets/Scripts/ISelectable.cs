@@ -5,7 +5,5 @@
         void Select();
 
         void Deselect();
-
-        void Click();
     }
 }

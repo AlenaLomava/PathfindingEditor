@@ -13,7 +13,9 @@ namespace Assets.Scripts.Field
 
         private Dictionary<Vector2Int, CellView> _cellViews = new Dictionary<Vector2Int, CellView>();
 
-        public void UpdateGridRendering(GameGrid gameGrid, GameState gameState)
+        public GameGrid GameGrid { get; private set; }
+
+        public void UpdateGridRendering(GameGrid gameGrid)
         {
             ClearGrid();
             var cells = gameGrid.GetAllCells();
@@ -22,18 +24,11 @@ namespace Assets.Scripts.Field
             {
                 var cellObject = Instantiate(_cellPrefab, new Vector3(cell.Column, 0, cell.Row), Quaternion.identity, _gridParent); //Make pool?
                 var cellView = cellObject.GetComponent<CellView>();
-                cellView.Initialize(cell, gameState, _gridParent.position);
+                cellView.Initialize(cell, _gridParent.position);
                 _cellViews[new Vector2Int(cell.Row, cell.Column)] = cellView;
             }
-        }
 
-        public void UpdateCellRendering(Cell cell)
-        {
-            var cellView = FindCellView(cell.Row, cell.Column);
-            if (cellView != null)
-            {
-                cellView.UpdateView();
-            }
+            GameGrid = gameGrid;
         }
 
         public void ClearGrid()
@@ -45,7 +40,7 @@ namespace Assets.Scripts.Field
             _cellViews.Clear();
         }
 
-        private CellView FindCellView(int row, int column)
+        public CellView FindCellView(int row, int column)
         {
             var key = new Vector2Int(row, column);
             if (_cellViews.TryGetValue(key, out var cellView))
