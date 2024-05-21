@@ -6,11 +6,11 @@ namespace Assets.Scripts.UI
 {
     public class ConsolePresenter
     {
+        private const int MAX_LOG_COUNT = 3;
+
         private readonly ConsoleView _consoleView;
         private StringBuilder _logBuilder = new StringBuilder();
         private readonly Queue<string> _logQueue = new Queue<string>();
-
-        private const int MAX_LOG_COUNT = 3;
 
         public ConsolePresenter(ConsoleView consoleView)
         {

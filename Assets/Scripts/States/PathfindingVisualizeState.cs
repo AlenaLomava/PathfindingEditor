@@ -68,6 +68,16 @@ namespace Assets.Scripts.States
 
                 _agentController.MoveAgentAlongPath(_path, _fieldController);
             }
+            else
+            {
+                HandleInvalidPathPoint();
+            }
+        }
+
+        private void HandleInvalidPathPoint()
+        {
+            Debug.LogWarning("Invalid path start or end point.");
+            _statesController.SetNoneState();
         }
     }
 }

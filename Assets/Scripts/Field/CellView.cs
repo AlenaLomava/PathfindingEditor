@@ -28,6 +28,8 @@ namespace Assets.Scripts.Field
 
         private bool _isSelected = false;
 
+        private float _outlineThickness = 0.1f;
+
         private Color DefaultColor => _cell.IsTraversable ? _traversableColor : _obstacleColor;
 
         public Cell Data => _cell;
@@ -93,7 +95,7 @@ namespace Assets.Scripts.Field
 
         private void SetOutline()
         {
-            var outlineThickness = _isSelected ? 0.1f : 0f;
+            var outlineThickness = _isSelected ? _outlineThickness : 0f;
             _renderer.material.SetFloat(OUTLINE_NAME, outlineThickness);
         }
 
