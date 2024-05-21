@@ -2,7 +2,7 @@
 
 namespace Assets.Scripts
 {
-    public interface IFieldEditorState : IDisposable
+    public interface IState : IDisposable
     {
     }
 }

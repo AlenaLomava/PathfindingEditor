@@ -1,44 +1,53 @@
 ﻿using Assets.Scripts.Field;
+using Priority_Queue;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Assets.Scripts.Pathfinding
 {
     public static class PathfindingAStar
     {
-        public static List<Cell> FindPathAStar(GameGrid grid, Cell startCell, Cell endCell)
+        private const int STEP_WEIGHT = 1;
+
+        public static (List<Cell> path, int exploredNodes) FindPath(IField field, Cell startCell, Cell endCell)
         {
-            var openSet = new List<Cell> { startCell };
+            var openSet = new SimplePriorityQueue<Cell, int>();
             var closedSet = new HashSet<Cell>();
 
             var gCosts = new Dictionary<Cell, int>();
+
             var hCosts = new Dictionary<Cell, int>();
             var parents = new Dictionary<Cell, Cell>();
 
+            int exploredNodes = 0;
+
             gCosts[startCell] = 0;
             hCosts[startCell] = GetDistance(startCell, endCell);
+            openSet.Enqueue(startCell, hCosts[startCell]);
 
             while (openSet.Count > 0)
             {
-                var currentCell = openSet.OrderBy(cell => gCosts[cell] + hCosts[cell]).ThenBy(cell => hCosts[cell]).First();
+                var currentCell = openSet.Dequeue();
+
+                exploredNodes++;
 
                 if (currentCell == endCell)
                 {
-                    return RetracePath(startCell, endCell, parents);
+                    return (RetracePath(startCell, endCell, parents), exploredNodes);
                 }
 
-                openSet.Remove(currentCell);
                 closedSet.Add(currentCell);
 
-                foreach (var neighbor in grid.GetNeighbors(currentCell))
+                var neighbors = field.GetCachedNeighbors(currentCell);
+
+                foreach (var neighbor in neighbors)
                 {
                     if (closedSet.Contains(neighbor))
                     {
                         continue;
                     }
 
-                    var newMovementCostToNeighbor = gCosts[currentCell] + GetDistance(currentCell, neighbor);
+                    var newMovementCostToNeighbor = gCosts[currentCell] + STEP_WEIGHT;
                     if (!gCosts.ContainsKey(neighbor) || newMovementCostToNeighbor < gCosts[neighbor])
                     {
                         gCosts[neighbor] = newMovementCostToNeighbor;
@@ -47,13 +56,18 @@ namespace Assets.Scripts.Pathfinding
 
                         if (!openSet.Contains(neighbor))
                         {
-                            openSet.Add(neighbor);
+                            var priority = gCosts[neighbor] + hCosts[neighbor];
+                            openSet.Enqueue(neighbor, priority);
+                        }
+                        else
+                        {
+                            openSet.UpdatePriority(neighbor, gCosts[neighbor] + hCosts[neighbor]);
                         }
                     }
                 }
             }
 
-            return null; // Path not found
+            return (null, exploredNodes);
         }
 
         private static List<Cell> RetracePath(Cell startCell, Cell endCell, Dictionary<Cell, Cell> parents)
@@ -67,6 +81,7 @@ namespace Assets.Scripts.Pathfinding
                 currentCell = parents[currentCell];
             }
 
+            path.Add(startCell);
             path.Reverse();
             return path;
         }
@@ -77,6 +92,13 @@ namespace Assets.Scripts.Pathfinding
             var dstY = Mathf.Abs(a.Row - b.Row);
 
             return dstX + dstY;
+        }
+
+        //For test purposes
+        private static float GetAggressiveHeuristic(Cell a, Cell b)
+        {
+            var k = 1.5f;
+            return k * GetDistance(a, b);
         }
     }
 }

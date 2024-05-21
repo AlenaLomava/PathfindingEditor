@@ -1,34 +1,18 @@
 using Assets.Scripts.Field;
-using UnityEngine;
 
-namespace Assets.Scripts.Config
+namespace Assets.Scripts.States
 {
-    public class DrawObstacleState : IFieldEditorState
+    public class DrawObstacleState : DrawState
     {
-        private readonly ISelectableController _selectableController;
-
-        public DrawObstacleState(ISelectableController selectableController)
+        public DrawObstacleState(ISelectableController selectableController, IField field)
+        : base(selectableController, field)
         {
-            _selectableController = selectableController;
-
-            _selectableController.OnClicked += HandleClicked;
         }
 
-        public void Dispose() 
+        protected override void HandleCellClicked(CellView cellView)
         {
-            _selectableController.OnClicked -= HandleClicked;
-        }
-
-        private void HandleClicked(ISelectable selectable)
-        {
-            if (selectable is CellView cellView)
-            {
-                cellView.SetTraversable(false);
-            }
-            else
-            {
-                Debug.LogWarning("Current clicked object is not a CellView.");
-            }
+            _field.SetCellTraversable(cellView.Data.Row, cellView.Data.Column, false);
+            cellView.UpdateView();
         }
     }
 }

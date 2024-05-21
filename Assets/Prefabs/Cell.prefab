@@ -19,7 +19,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8660214648738789429
 Transform:
   m_ObjectHideFlags: 0
@@ -120,9 +120,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _renderer: {fileID: 4074080264593828190}
-  _passableColor: {r: 0.25164112, g: 0.7132075, b: 0.29348224, a: 0}
-  _nonPassableColor: {r: 0, g: 0, b: 0, a: 0}
-  _drawPathColor: {r: 0.8113208, g: 0.14542533, b: 0.73532945, a: 1}
+  _traversableColor: {r: 0.09601278, g: 0.5849056, b: 0.38499394, a: 1}
+  _obstacleColor: {r: 0, g: 0, b: 0, a: 1}
+  _drawPathColor: {r: 1, g: 0.4356842, b: 0, a: 1}
   _pathText: {fileID: 819139239730166060}
 --- !u!1 &7633470162941336131
 GameObject:

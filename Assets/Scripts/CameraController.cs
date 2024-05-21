@@ -1,27 +1,10 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts.Config;
+using UnityEngine;
 
 namespace Assets.Scripts
 {
     public class CameraController : MonoBehaviour
     {
-        [SerializeField]
-        private float _moveSpeed = 3.5f;
-
-        [SerializeField]
-        private float _zoomSpeed = 10f;
-
-        [SerializeField]
-        private float _rotateSpeed = 10f;
-
-        [SerializeField]
-        private float _minZoom = 5f;
-
-        [SerializeField]
-        private float _maxZoom = 50f;
-
-        [SerializeField]
-        private float _heightInfluence = 0.5f;
-
         public void Update()
         {
             HandleKeyboardMovement();
@@ -35,9 +18,9 @@ namespace Assets.Scripts
             float verticalInput = Input.GetAxis("Vertical");
 
             Vector3 translation = new Vector3(horizontalInput, 0, verticalInput);
-            float heightFactor = 1 + (transform.position.y * _heightInfluence);
+            float heightFactor = 1 + (transform.position.y * Constants.Camera.HEIGHT_INFLUENCE);
 
-            transform.Translate(translation * _moveSpeed * Time.deltaTime * heightFactor, Space.World);
+            transform.Translate(translation * Constants.Camera.MOVE_SPEED * Time.deltaTime * heightFactor, Space.World);
         }
 
         private void HandleMouseMovement()
@@ -50,7 +33,7 @@ namespace Assets.Scripts
                 Vector3 right = transform.right;
                 Vector3 up = transform.up;
 
-                Vector3 moveDirection = (right * -h + up * -v) * _rotateSpeed * Time.deltaTime;
+                Vector3 moveDirection = (right * -h + up * -v) * Constants.Camera.ROTATE_SPEED * Time.deltaTime;
                 transform.Translate(moveDirection, Space.World);
             }
         }
@@ -60,8 +43,8 @@ namespace Assets.Scripts
             float scroll = Input.GetAxis("Mouse ScrollWheel");
             if (scroll != 0.0f)
             {
-                float zoomAmount = scroll * _zoomSpeed;
-                float newHeight = Mathf.Clamp(transform.position.y - zoomAmount, _minZoom, _maxZoom);
+                float zoomAmount = scroll * Constants.Camera.ZOOM_SPEED;
+                float newHeight = Mathf.Clamp(transform.position.y - zoomAmount, Constants.Camera.MIN_ZOOM, Constants.Camera.MAX_ZOOM);
                 transform.position = new Vector3(transform.position.x, newHeight, transform.position.z);
             }
         }

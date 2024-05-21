@@ -6,14 +6,17 @@ namespace Assets.Scripts.Field
 {
     public class CellView : MonoBehaviour, ISelectable
     {
+        private const string START_POINT_TEXT = "START";
+        private const string OUTLINE_NAME = "_Outline";
+
         [SerializeField]
         private Renderer _renderer;
 
         [SerializeField]
-        private Color _passableColor;
+        private Color _traversableColor;
 
         [SerializeField]
-        private Color _nonPassableColor;
+        private Color _obstacleColor;
 
         [SerializeField]
         private Color _drawPathColor;
@@ -21,11 +24,11 @@ namespace Assets.Scripts.Field
         [SerializeField]
         private TextMeshPro _pathText;
 
-        private Color DefaultColor => _cell.IsTraversable ? _passableColor : _nonPassableColor;
-
         private Cell _cell;
 
         private bool _isSelected = false;
+
+        private Color DefaultColor => _cell.IsTraversable ? _traversableColor : _obstacleColor;
 
         public Cell Data => _cell;
 
@@ -35,6 +38,7 @@ namespace Assets.Scripts.Field
 
             SetPosition(rootPosition);
             UpdateView();
+            SetOutline();
             ClearPathText();
         }
 
@@ -53,32 +57,24 @@ namespace Assets.Scripts.Field
             SetSelected(true);
         }
 
-        public void DrawPath()
+        public void SetPathColor()
         {
             _renderer.material.color = _drawPathColor;
         }
 
-        public void SetTraversable(bool isTraversable)
+        public void SetDefaultColor()
         {
-            _cell.SetTraversable(isTraversable);
-            UpdateView();
+            _renderer.material.color = DefaultColor;
         }
 
         public void UpdateView()
         {
-            var outlineThikness = _isSelected ? 0.1f : 0f;
-            _renderer.material.SetFloat("_Outline", outlineThikness);
-            _renderer.material.color = DefaultColor;
+            SetDefaultColor();
         }
 
-        public void SetPathStartPoint()
+        public void SetPathStartPointText()
         {
-            _pathText.SetText("START");
-        }
-
-        public void SetPathEndPoint()
-        {
-            _pathText.SetText("END");
+            _pathText.SetText(START_POINT_TEXT);
         }
 
         public void ClearPathText()
@@ -91,16 +87,22 @@ namespace Assets.Scripts.Field
             if (_isSelected != isSelected)
             {
                 _isSelected = isSelected;
-                UpdateView();
+                SetOutline();
             }
+        }
+
+        private void SetOutline()
+        {
+            var outlineThickness = _isSelected ? 0.1f : 0f;
+            _renderer.material.SetFloat(OUTLINE_NAME, outlineThickness);
         }
 
         private void SetPosition(Vector3 rootPosition)
         {
             transform.position = new Vector3(
-                 rootPosition.x + (_cell.Row * Constants.SPACE_BETWEEN_CELLS),
+                 rootPosition.x + (_cell.Row * Constants.Field.SPACE_BETWEEN_CELLS),
                  0,
-                 rootPosition.z + (_cell.Column * Constants.SPACE_BETWEEN_CELLS));
+                 rootPosition.z + (_cell.Column * Constants.Field.SPACE_BETWEEN_CELLS));
         }
     }
 }

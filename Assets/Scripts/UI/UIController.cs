@@ -24,34 +24,53 @@ namespace Assets.Scripts.UI
         private ToggleButton _setObstacleButton;
 
         [SerializeField]
-        private ToggleButton _setPassableButton;
+        private ToggleButton _setTraversableButton;
 
         [SerializeField]
-        private Button _pathfindingButton;
+        private ToggleButton _pathfindingButton;
+
+        [SerializeField]
+        private ConsoleView _consoleView;
 
         private ToggleButtonPresenter _toggleButtonPresenter;
         private GenerateFieldButtonPresenter _generateFieldButtonPresenter;
-        private PathfindingButtonPresenter _pathfindingButtonPresenter;
+        private ConsolePresenter _consolePresenter;
+        private IStatesController _statesController;
 
         public void OnDisable()
         {
             _toggleButtonPresenter?.Dispose();
             _generateFieldButtonPresenter?.Dispose();
-            _pathfindingButtonPresenter?.Dispose();
+            _consolePresenter?.Dispose();
+            _statesController.OnNoneState -= ResetButtons;
         }
 
-        public void Initialize(GridController gridController, IFieldEditorStatesController statesController)
+        public void Initialize(IFieldGenerator fieldGenerator, IStatesController statesController)
         {
-            _toggleButtonPresenter = new ToggleButtonPresenter(_setObstacleButton, _setPassableButton, statesController);
+            _statesController = statesController;
+
+            _toggleButtonPresenter = new ToggleButtonPresenter(
+                _setObstacleButton, 
+                _setTraversableButton, 
+                _pathfindingButton, 
+                statesController);
 
             _generateFieldButtonPresenter = new GenerateFieldButtonPresenter(
                 _rowsInput, 
                 _columnsInput, 
                 _obstaclesInput,
                 _generateFieldButton,
-                gridController);
+                fieldGenerator,
+                statesController);
 
-            _pathfindingButtonPresenter = new PathfindingButtonPresenter(_pathfindingButton, statesController);
+            _consolePresenter = new ConsolePresenter(_consoleView);
+
+            _statesController.OnNoneState += ResetButtons;
+        }
+
+        public void ResetButtons()
+        {
+            _toggleButtonPresenter.ResetToggles();
         }
     }
 }

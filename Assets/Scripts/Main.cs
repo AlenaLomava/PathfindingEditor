@@ -8,21 +8,30 @@ namespace Assets.Scripts
     public class Main : MonoBehaviour
     {
         [SerializeField]
-        public UIController _uiController;
+        private UIController _uiController;
 
         [SerializeField]
-        public GameGridView _gameGridView;
+        private FieldController _fieldController;
 
         [SerializeField]
-        public SelectableController _selectableController;
+        private SelectableController _selectableController;
 
-        private GridController _gridController;
+        [SerializeField]
+        private AgentController _agentController;
 
         void Start()
         {
-            var statesController = new FieldEditorStatesController(_selectableController, _gameGridView);
-            _gridController = new GridController(_gameGridView);
-            _uiController.Initialize(_gridController, statesController);
+            var fieldStorage = new FieldStorage();
+
+            var fieldGenerator = new FieldGenerator(_fieldController, fieldStorage);
+
+            var statesController = new StatesController(
+                _selectableController, 
+                fieldStorage, 
+                _fieldController,
+                _agentController);
+
+            _uiController.Initialize(fieldGenerator, statesController);
         }
     }
 }
